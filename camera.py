@@ -1,6 +1,9 @@
 from picamera2.picamera2 import Picamera2
 import cv2
 
+
+#このプログラムは動いた、仮想環境にすると動かなくなる
+
 # Picamera2を初期化
 picam2 = Picamera2()
 
