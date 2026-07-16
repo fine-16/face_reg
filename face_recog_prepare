@@ -1,4 +1,5 @@
 import os
+import shutil
 
 import numpy as np
 import onnx
@@ -6,8 +7,9 @@ import onnxruntime as ort
 from PIL import Image
 
 
-
 #使う写真はPNGで224px×224pxにリサイズしておくこと
+#写真の名前を本名.pngにしてもらう（空欄を入れない）
+#使う写真をprepare_queryに入れる。その際に前にあった写真は消す
 
 
 # ----------------------------
@@ -59,60 +61,26 @@ def get_embedding(image_path):
     return embedding
 
 
-# ----------------------------
-# コサイン類似度
-# ----------------------------
-def cosine_similarity(v1, v2):
-    return np.dot(v1, v2)
 
+#============================
+#アプリのメイン処理
+#ndarray形式で保存を行う
+#保存できたファイルをprepare_queryからregistered_photosに移動する
+#============================
 
-# ----------------------------
-# 百分率（元の式を利用）
-# ----------------------------
-def percentage(cos_sim):
-    return round(
-        -23.71 * cos_sim ** 2
-        + 49.98 * cos_sim
-        + 73.69,
-        2
-    )
+if __name__ == "__main__":
+    # ============================
+    # 判定したい画像
+    # ============================
+    query_dir = "query"
+    file = os.listdir(query_dir)[0]
+    path = os.path.join(query_dir, file)#pathはこれから登録する写真のパス
+    query_embedding = get_embedding(path)
 
+    output_dir = "save_feature"
+    file_path = os.path.join(output_dir, f"{os.path.splitext(file)[0]}.npy")
+    np.save(file_path, query_embedding)
 
-# ============================
-# 判定したい画像
-# ============================
-query_image = "query.png"
+    print("保存完了:", file_path)
 
-query_embedding = get_embedding(query_image)
-
-# ============================
-# 登録人物
-# ============================
-database_dir = "database"
-
-best_person = ""
-best_similarity = -1
-
-print("------ 類似度 ------")
-
-for file in os.listdir(database_dir):
-
-    if not file.lower().endswith((".png", ".jpg", ".jpeg")):
-        continue
-
-    path = os.path.join(database_dir, file)
-
-    embedding = get_embedding(path)
-
-    sim = cosine_similarity(query_embedding, embedding)
-
-    print(f"{os.path.splitext(file)[0]:15s} : {percentage(sim)}%")
-
-    if sim > best_similarity:
-        best_similarity = sim
-        best_person = os.path.splitext(file)[0]
-
-print("\n==========================")
-print("最も似ている人物")
-print(best_person)
-print(f"類似度 : {percentage(best_similarity)}%")
+    shutil.move(path,'registered_photos')#登録済み写真フォルダに移動
