@@ -5,7 +5,7 @@ import onnx
 import onnxruntime as ort
 from PIL import Image
 
-model_name = "JAPANESE_FACE_v1.onnx"
+
 
 #使う写真はPNGで224px×224pxにリサイズしておくこと
 
@@ -13,6 +13,7 @@ model_name = "JAPANESE_FACE_v1.onnx"
 # ----------------------------
 # モデル読込
 # ----------------------------
+model_name = "JAPANESE_FACE_v1.onnx"
 onnx_model = onnx.load(model_name)
 ort_session = ort.InferenceSession(model_name)
 
@@ -86,21 +87,21 @@ query_embedding = get_embedding(query_image)
 # ============================
 # 登録人物
 # ============================
-database_dir = "database"
+feature_dir = "saved_feature"
 
 best_person = ""
 best_similarity = -1
 
 print("------ 類似度 ------")
 
-for file in os.listdir(database_dir):
+for file in os.listdir(feature_dir):
 
-    if not file.lower().endswith((".png", ".jpg", ".jpeg")):
+    if not file.lower().endswith(".npy"):
         continue
 
-    path = os.path.join(database_dir, file)
+    path = os.path.join(feature_dir, file)
 
-    embedding = get_embedding(path)
+    embedding = np.load(path)
 
     sim = cosine_similarity(query_embedding, embedding)
 

@@ -70,17 +70,19 @@ def get_embedding(image_path):
 
 if __name__ == "__main__":
     # ============================
-    # 判定したい画像
+    # queryに入っているファイルを特徴量に変換して変換できた写真はregistered_photosに移動する
     # ============================
-    query_dir = "query"
-    file = os.listdir(query_dir)[0]
-    path = os.path.join(query_dir, file)#pathはこれから登録する写真のパス
-    query_embedding = get_embedding(path)
 
-    output_dir = "save_feature"
-    file_path = os.path.join(output_dir, f"{os.path.splitext(file)[0]}.npy")
-    np.save(file_path, query_embedding)
+    for file in os.listdir("query"):
+        if file.endswith(".png"):
+            query_image = os.path.join("query", file)
+            query_embedding = get_embedding(query_image)
 
-    print("保存完了:", file_path)
+            output_dir = "saved_feature"
+            file_path = os.path.join(output_dir, f"{os.path.splitext(file)[0]}.npy")
+            np.save(file_path, query_embedding)
 
-    shutil.move(path,'registered_photos')#登録済み写真フォルダに移動
+            print("保存完了:", file_path)
+
+            shutil.move(query_image, 'registered_photos')  # 登録済み写真フォルダに移動
+    
