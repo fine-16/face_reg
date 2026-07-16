@@ -1,0 +1,116 @@
+import os
+
+import numpy as np
+import onnx
+import onnxruntime as ort
+from PIL import Image
+
+model_name = "JAPANESE_FACE_v1.onnx"
+
+#使う写真はPNGで224px×224pxにリサイズしておくこと
+
+
+# ----------------------------
+# モデル読込
+# ----------------------------
+onnx_model = onnx.load(model_name)
+ort_session = ort.InferenceSession(model_name)
+
+input_name = onnx_model.graph.input[0].name
+
+# ----------------------------
+# 特徴量抽出
+# ----------------------------
+def get_embedding(image_path):
+
+
+     # 0. 画像の読み込み (PIL)
+    # torchvision.transforms は内部で PIL Image をベースに処理を行います
+    img = Image.open(image_path).convert('RGB')
+    
+    # 1. transforms.Resize((224, 224)) の再現
+    # ※PILのImage.BILINEAR（またはImage.Resampling.BILINEAR）がデフォルトの挙動です
+    img_resized = img.resize((224, 224), resample=Image.BILINEAR)
+    
+    # 2. transforms.ToTensor() の再現
+    # [H, W, C] 且つ 0〜255 の整数から、[C, H, W] 且つ 0.0〜1.0 の浮動小数点に変換します
+    img_np = np.array(img_resized, dtype=np.float32) / 255.0  # 0~1に正規化
+    img_tensor = img_np.transpose(2, 0, 1)                     # [H,W,C] -> [C,H,W]
+    
+    # 3. transforms.Normalize(mean, std) の再現
+    # 各チャンネル（R, G, B）に対して (x - mean) / std を計算します
+    mean = np.array([0.485, 0.456, 0.406], dtype=np.float32).reshape(3, 1, 1)
+    std = np.array([0.229, 0.224, 0.225], dtype=np.float32).reshape(3, 1, 1)
+    
+    img_normalized = (img_tensor - mean) / std
+
+    image = img_normalized[None]
+
+    embedding = ort_session.run(
+        None,
+        {input_name: image}
+    )[0]
+
+    embedding = embedding.flatten()
+    embedding /= np.linalg.norm(embedding)
+
+    return embedding
+
+
+# ----------------------------
+# コサイン類似度
+# ----------------------------
+def cosine_similarity(v1, v2):
+    return np.dot(v1, v2)
+
+
+# ----------------------------
+# 百分率（元の式を利用）
+# ----------------------------
+def percentage(cos_sim):
+    return round(
+        -23.71 * cos_sim ** 2
+        + 49.98 * cos_sim
+        + 73.69,
+        2
+    )
+
+
+# ============================
+# 判定したい画像
+# ============================
+query_image = "query.png"
+
+query_embedding = get_embedding(query_image)
+
+# ============================
+# 登録人物
+# ============================
+database_dir = "database"
+
+best_person = ""
+best_similarity = -1
+
+print("------ 類似度 ------")
+
+for file in os.listdir(database_dir):
+
+    if not file.lower().endswith((".png", ".jpg", ".jpeg")):
+        continue
+
+    path = os.path.join(database_dir, file)
+
+    embedding = get_embedding(path)
+
+    sim = cosine_similarity(query_embedding, embedding)
+
+    print(f"{os.path.splitext(file)[0]:15s} : {percentage(sim)}%")
+
+    if sim > best_similarity:
+        best_similarity = sim
+        best_person = os.path.splitext(file)[0]
+
+print("\n==========================")
+print("最も似ている人物")
+print(best_person)
+print(f"類似度 : {percentage(best_similarity)}%")

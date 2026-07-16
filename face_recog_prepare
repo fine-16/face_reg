@@ -5,14 +5,16 @@ import onnx
 import onnxruntime as ort
 from PIL import Image
 
-model_name = "JAPANESE_FACE_v1.onnx"
 
 
+#使う写真はPNGで224px×224pxにリサイズしておくこと
 
 
 # ----------------------------
 # モデル読込
 # ----------------------------
+
+model_name = "JAPANESE_FACE_v1.onnx"
 onnx_model = onnx.load(model_name)
 ort_session = ort.InferenceSession(model_name)
 
