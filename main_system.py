@@ -5,7 +5,7 @@ import onnx
 import onnxruntime as ort
 from PIL import Image
 
-
+#recognize_faceの部分を後で適切に書き換える　特にquery_imageと出力の部分
 
 class FaceRecognizer:
     #使う写真はPNGで224px×224pxにリサイズしておくこと
