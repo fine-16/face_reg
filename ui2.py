@@ -4,8 +4,7 @@ import cv2
 from PIL import Image, ImageTk, ImageOps  # 画像データ用
 from picamera2.picamera2 import Picamera2
 
-picam2 = Picamera2()
-picam2.start()
+
 
 class AttendanceApp:
 
@@ -14,7 +13,10 @@ class AttendanceApp:
         self.window.title("勤怠管理システム")
 
         # 1. カメラの初期化
-        self.cap = cv2.VideoCapture(0)
+        self.picam2 = Picamera2()
+        self.picam2.start()
+        #　カメラの映像を取得するための変数を設定
+        self.capture=self.picam2.capture_array()
 
         # 2. 全体のレイアウト設定（左右のフレームを作成）
         self.left_frame = tk.Frame(window)
@@ -27,30 +29,18 @@ class AttendanceApp:
 
         # 3. 左フレーム：カメラ映像を表示する空のCanvasを作成
         self.canvas = tk.Canvas(self.left_frame)
-        # Canvasにマウスイベント（左ボタンクリック）の追加
-        self.canvas.bind('<Button-1>', self.canvas_click)
+       
         # Canvasを配置
         self.canvas.pack(expand=True, fill=tk.BOTH)
 
-        self.capture=picam2.capture_array()
-        self.disp_id = None
-
-        # 4. 右フレーム：名前「入力欄」への変更
+        # 右フレーム：名前「入力欄」への変更
+        self.name_text = "適切な位置に顔を合わせてください"
         self.name_title_label = tk.Label(
-            self.right_frame, text="【お名前を入力してください】"
+            self.right_frame, text= self.name_text
         )
         self.name_title_label.pack(pady=(20, 5))
 
-        # ★ tk.Label から tk.Entry に変更
-        self.name_entry = tk.Entry(
-            self.right_frame, width=15, justify="center"
-        )
-        self.name_entry.pack(pady=(0, 40))
-
-        # 初期値として「山田 太郎」と入力された状態にする（空欄から始めたい場合は削除してください）
-        self.name_entry.insert(0, "山田 太郎")
-
-        # 5. 右フレーム：出勤・退勤ボタン
+        #  右フレーム：出勤・退勤ボタン
         self.btn_attendance = tk.Button(
             self.right_frame,
             text="出勤",
@@ -76,43 +66,23 @@ class AttendanceApp:
         self.btn_leaving.pack(pady=10)
 
         # 6. 映像更新ループの開始
-        self.update_video()
+        self.disp_image()
 
         # 7. ウィンドウが閉じられたときの終了処理を登録
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
 
 
-    def canvas_click(self, event):
-        '''Canvasのマウスクリックイベント'''
-
-        if self.disp_id is None:
-            # 動画を表示
-            self.disp_image()
-        else:
-            # 動画を停止
-            self.after_cancel(self.disp_id)
-            self.disp_id = None
-
-
-    def update_video(self):
-        """カメラからフレームを取得してTkinter用に変換し、表示を更新する関数"""
-        ret, frame = self.cap.read()
-        if ret:
-            cv2_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            pil_image = Image.fromarray(cv2_image)
-            self.photo = ImageTk.PhotoImage(image=pil_image)
-            self.video_label.config(image=self.photo)
-
-             # カメラ画像を取得
-   
-
-        self.window.after(15, self.update_video)
+    #顔の推定値はこれに渡す
+    def get_name_text(self, text):
+        """顔から推定されたテキストを取得し、空白を除去して返す"""
+        self.name_text = text
+        return text.strip()
 
     def disp_image(self):
         '''画像をCanvasに表示する'''
 
         # フレーム画像の取得
-        ret, frame = self.capture.read()
+        ret, frame = self.capture
     
         # BGR→RGB変換
         cv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -138,18 +108,10 @@ class AttendanceApp:
                 )
 
         # disp_image()を10msec後に実行する
-        self.disp_id = self.after(10, self.disp_image)
+        self.after(10, self.disp_image)
 
-    def get_and_validate_name(self):
-        """入力された名前を取得し、空欄チェックを行う共通関数"""
-        # ★ .get() でEntry内の文字列を取得
-        name = self.name_entry.get().strip()
 
-        if not name:
-            messagebox.showwarning("入力エラー", "名前が入力されていません。")
-            return None
-        return name
-
+    #on_attendance()とon_leaving()はデータベースを作ってからプログラムを修正する
     def on_attendance(self):
         """出勤ボタンが押されたときの処理"""
         name = self.get_and_validate_name()
@@ -164,7 +126,8 @@ class AttendanceApp:
 
     def on_closing(self):
         """アプリ終了時にカメラを安全に解放する処理"""
-        self.cap.release()
+        self.picam2.stop()
+        self.picam2.release()
         self.window.destroy()
 
 
