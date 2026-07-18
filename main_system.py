@@ -22,7 +22,7 @@ from PIL import Image, ImageTk, ImageOps  # 画像データ用
 from picamera2.picamera2 import Picamera2
 
 
-#最後にclose忘れない
+#最後にclose忘れない<-AttendanceAPPで実装済み
 class CameraUnit:
 
     def __init__(self):
@@ -47,7 +47,7 @@ class CameraUnit:
         self.picam2.stop()
         self.picam2.release()
 
-#最後にclose忘れない
+#最後にclose忘れない<-AttendanceAPPで実装済み
 class Database:
     def __init__(self):
         self.conn = sqlite3.connect('attendance.db')

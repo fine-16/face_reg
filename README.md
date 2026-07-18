@@ -1,5 +1,6 @@
 # Face_Recognition
   ラズベリーパイ３Bで動く簡単な顔認証勤怠システムです
   
-
+# メモ
+prepare_systemはqueryフォルダにpngの224px*224pxの写真を入れて実行するとsaved_featureに.npyで保存されて写真はregistered_photosに移動する
 
