@@ -13,19 +13,20 @@ class FaceRecognizer:
     #----------------------------
     # モデル読込
     # ----------------------------
-    def __init__(self, model_name="JAPANESE_FACE_v1.onnx"):
-        self.model_name = "JAPANESE_FACE_v1.onnx"
+    def __init__(self, frame, model_name="JAPANESE_FACE_v1.onnx"):
+        self.model_name = model_name
         self.onnx_model = onnx.load(self.model_name)
         self.ort_session = ort.InferenceSession(self.model_name)
         self.input_name = self.onnx_model.graph.input[0].name
 
+        
     # ----------------------------
     # 特徴量抽出
     # ----------------------------
     def get_embedding(self, image_path):
         # 0. 画像の読み込み (PIL)
         # torchvision.transforms は内部で PIL Image をベースに処理を行います
-        img = Image.open(image_path).convert('RGB')
+        img = self.pil_image.convert('RGB')
     
         # 1. transforms.Resize((224, 224)) の再現
         # ※PILのImage.BILINEAR（またはImage.Resampling.BILINEAR）がデフォルトの挙動です
@@ -73,7 +74,10 @@ class FaceRecognizer:
             2
         )
 
-
+    #============================
+    # 顔認識のメイン処理
+    #認識した顔の名前を返す
+    #============================
     def recognize_face(self, query_image="query.png", feature_dir="saved_feature"):
         # ============================
         # 判定したい画像
@@ -89,8 +93,6 @@ class FaceRecognizer:
 
         best_person = ""
         best_similarity = -1
-
-        print("------ 類似度 ------")
 
         for file in os.listdir(feature_dir):
 
@@ -109,10 +111,9 @@ class FaceRecognizer:
                 best_similarity = sim
                 best_person = os.path.splitext(file)[0]
 
-        print("\n==========================")
-        print("最も似ている人物")
         print(best_person)
-        print(f"類似度 : {self.percentage(best_similarity)}%")
+
+        return best_person
 
 
 if __name__ == "__main__":

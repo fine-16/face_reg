@@ -82,7 +82,7 @@ class AttendanceApp:
         '''画像をCanvasに表示する'''
 
         # フレーム画像の取得
-        ret, frame = self.capture
+        frame = self.capture
     
         # BGR→RGB変換
         cv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
