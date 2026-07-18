@@ -10,7 +10,7 @@ class CameraUnit:
         self.picam2 = Picamera2()
         self.picam2.start()
 
-
+    #PILの状態で返す
     def get_frame(self):
         # カメラの映像を取得
         self.capture=self.picam2.capture_array()
@@ -19,12 +19,13 @@ class CameraUnit:
         cv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         # NumPyのndarrayからPillowのImageへ変換
         self.pil_image = Image.fromarray(cv_image)
-        return self.pil_image
 
+        return self.pil_image
 
     def close(self):
         # 2. カメラの停止
         self.picam2.stop()
+        self.picam2.release()
 
 if __name__ == "__main__":
     camera_unit = CameraUnit()

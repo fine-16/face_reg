@@ -5,20 +5,38 @@ from PIL import Image, ImageTk, ImageOps  # 画像データ用
 from picamera2.picamera2 import Picamera2
 
 
-
 class AttendanceApp:
 
-    def __init__(self, window):
+    def __init__(self, window, camera_unit, face_recognizer, database):
         self.window = window
         self.window.title("勤怠管理システム")
 
+        #camera_unitとface_recognizerとDBのインスタンスを受け取る
+
+        #get_frame()でPILの状態で画像を取得する
+        #close()でカメラを解放する
+        self.camera_unit = camera_unit
+       
+        #recognize_face(pil_image)で顔認識を行う best_personが返ってくる
+        self.face_recognizer = face_recognizer
+        
+        
+        #insert_record(name, status)でDBにレコードを挿入する
+        #get_last_record()で最後のレコードを取得する
+        self.database = database
+
+
+
+        #cameraはCameraUnitのクラスを使う
+        '''
         # 1. カメラの初期化
         self.picam2 = Picamera2()
         self.picam2.start()
-        #　カメラの映像を取得するための変数を設定
+        #カメラの映像を取得するための変数を設定
         self.capture=self.picam2.capture_array()
+        '''
 
-        # 2. 全体のレイアウト設定（左右のフレームを作成）
+        # 全体のレイアウト設定（左右のフレームを作成）
         self.left_frame = tk.Frame(window)
         self.left_frame.pack(side=tk.LEFT, padx=20, pady=20)
 
@@ -27,7 +45,7 @@ class AttendanceApp:
             side=tk.RIGHT, padx=20, pady=20, fill=tk.Y, expand=True
         )
 
-        # 3. 左フレーム：カメラ映像を表示する空のCanvasを作成
+        # 左フレーム：カメラ映像を表示する空のCanvasを作成
         self.canvas = tk.Canvas(self.left_frame)
        
         # Canvasを配置
@@ -65,33 +83,61 @@ class AttendanceApp:
         )
         self.btn_leaving.pack(pady=10)
 
-        # 6. 映像更新ループの開始
+        # 最後に入力された勤怠を表示
+        self.last_record = "ここに最終操作が表示されます"
+        self.last_record_label = tk.Label(
+            self.right_frame, text= self.last_record
+        )
+        self.last_record_label.pack(pady=(20, 5))
+
+        # 映像更新ループの開始
         self.disp_image()
 
-        # 7. ウィンドウが閉じられたときの終了処理を登録
+        #名前の更新ループの開始
+        self.disp_best_person_name()
+
+        #データベースからの読み取りループの開始
+        self.disp_last_record()
+
+
+        # ウィンドウが閉じられたときの終了処理を登録
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
 
 
     #顔の推定値はこれに渡す
-    def get_name_text(self, text):
-        """顔から推定されたテキストを取得し、空白を除去して返す"""
-        self.name_text = text
-        return text.strip()
+    def disp_best_person_name(self):
+
+        #推定するカメラ画像の取得
+        #pilimageをframeに渡す
+        pil_image = self.camera_unit.get_frame() 
+
+        #face_recognizerでカメラ画像が登録されている人のうちの誰に一番近いか推測して表示する
+        best_person_name = self.face_recognizer.recognize_face(pil_image)
+        self.name_text = best_person_name
+
+        # disp_image()を500msec後に実行する
+        self.after(500, self.disp_best_person_name)
+
 
     def disp_image(self):
-        '''画像をCanvasに表示する'''
+        #画像をCanvasに表示する
 
+        
         # フレーム画像の取得
-        frame = self.capture
-    
+        #frame = self.capture
+
         # BGR→RGB変換
-        cv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        #cv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         # NumPyのndarrayからPillowのImageへ変換
-        pil_image = Image.fromarray(cv_image)
+        #pil_image = Image.fromarray(cv_image)
+        
 
         # キャンバスのサイズを取得
         canvas_width = self.canvas.winfo_width()
         canvas_height = self.canvas.winfo_height()
+
+        #pilimageをframeに渡す
+        pil_image = self.camera_unit.get_frame() 
 
         # 画像のアスペクト比（縦横比）を崩さずに指定したサイズ（キャンバスのサイズ）全体に画像をリサイズする
         pil_image = ImageOps.pad(pil_image, (canvas_width, canvas_height))
@@ -110,24 +156,33 @@ class AttendanceApp:
         # disp_image()を10msec後に実行する
         self.after(10, self.disp_image)
 
+    def disp_last_record(self):
+        db_last_record = self.database.get_last_record()
+        self.last_record="".join([str(item) for item in db_last_record])
+
+        # disp_image()を510msec後に実行する
+        self.after(510, self.disp_last_record)
+
+
 
     #on_attendance()とon_leaving()はデータベースを作ってからプログラムを修正する
     def on_attendance(self):
-        """出勤ボタンが押されたときの処理"""
+        #"出勤ボタンが押されたときの処理
         name = self.get_and_validate_name()
-        if name:  # 名前が正しく入力されている場合のみ実行
-            messagebox.showinfo("記録完了", f"{name}さんの「出勤」を記録しました。")
+        #データベースにその名前を登録する
+        self.database.insert_record(name, "attendance")
 
     def on_leaving(self):
-        """退勤ボタンが押されたときの処理"""
+        #"退勤ボタンが押されたときの処理
         name = self.get_and_validate_name()
-        if name:  # 名前が正しく入力されている場合のみ実行
-            messagebox.showinfo("記録完了", f"{name}さんの「退勤」を記録しました。")
+        #データベースにその名前を登録する
+        self.database.insert_record(name, "leaving")
+
 
     def on_closing(self):
-        """アプリ終了時にカメラを安全に解放する処理"""
-        self.picam2.stop()
-        self.picam2.release()
+        #アプリ終了時にメモリを解放する処理
+        self.camera_unit.close()
+        self.database.close()
         self.window.destroy()
 
 

@@ -1,7 +1,7 @@
 import sqlite3
 
 
-class database:
+class Database:
     def __init__(self):
         self.conn = sqlite3.connect('attendance.db')
         self.cursor = self.conn.cursor()
@@ -20,9 +20,6 @@ class database:
         ''')
         self.conn.commit()
 
-    def get_insert_values(self, name, status):
-        # 挿入する名前とステータスを取得
-        return name,status
     
     def insert_record(self, name, status):
         # レコードを挿入
@@ -66,6 +63,6 @@ class database:
 
 
 if __name__ == "__main__":
-    db = database()
+    db = Database()
     
     db.close()
