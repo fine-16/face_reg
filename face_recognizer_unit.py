@@ -1,3 +1,10 @@
+#FaceRecognizerのためのライブラリ
+import os
+import numpy as np
+import onnx
+import onnxruntime as ort
+from PIL import Image
+
 class FaceRecognizer:
     #使う写真はPNGで224px×224pxにリサイズしておくこと
     
