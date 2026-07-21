@@ -228,12 +228,11 @@ class FaceRecognizer:
             print(f"{os.path.splitext(file)[0]:15s} : {self.percentage(sim)}%")
 
             if sim > best_similarity:
-                if sim > 80:
-                    best_similarity = sim
-                    best_person = os.path.splitext(file)[0]
-                else:
-                    best_similarity = sim
-                    best_person = "Unknown"
+                best_similarity = sim
+                best_person = os.path.splitext(file)[0]
+            
+        if self.percentage(best_similarity) < 80:
+            best_person = "Unknown"
 
         print(best_person)
 
