@@ -473,6 +473,7 @@ class AttendanceApp:
         self.window.destroy()
 
         #データベースの同期　時間がかかるけど触らない
+        #定期的な動機はシェルスクリプトで行う
         self.sync.sync()
 
 
