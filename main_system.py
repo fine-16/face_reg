@@ -53,16 +53,15 @@ class CameraUnit:
         self.capture=self.picam2.capture_array()
         frame = self.capture
         # BGR→RGB変換
-        cv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        #cv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         # NumPyのndarrayからPillowのImageへ変換
-        self.pil_image = Image.fromarray(cv_image)
+        self.pil_image = Image.fromarray(frame)
 
         return self.pil_image
 
     def close(self):
         # カメラの停止
-        self.picam2.stop()
-        self.picam2.release()
+        self.picam2.close()
 
 #最後にclose忘れない<-AttendanceAPPで実装済み
 class Database:
