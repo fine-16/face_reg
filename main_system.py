@@ -1,3 +1,4 @@
+'''
 #CameraUnitのためのライブラリ
 from picamera2.picamera2 import Picamera2
 import cv2
@@ -20,6 +21,22 @@ from tkinter import messagebox
 import cv2
 from PIL import Image, ImageTk, ImageOps  # 画像データ用
 from picamera2.picamera2 import Picamera2
+'''
+
+#整理したライブラリ
+from picamera2.picamera2 import Picamera2
+import cv2
+
+import sqlite3
+
+import os
+import numpy as np
+import onnx
+import onnxruntime as ort
+
+import tkinter as tk
+from tkinter import messagebox
+from PIL import Image, ImageTk, ImageOps  # 画像データ用
 
 
 #最後にclose忘れない<-AttendanceAPPで実装済み
@@ -407,6 +424,6 @@ if __name__ == "__main__":
     camera_unit = CameraUnit()
     face_recognizer = FaceRecognizer()
     database = Database() 
-    app = AttendanceApp(root)
+    app = AttendanceApp(root,camera_unit,face_recognizer,database)
     root.mainloop()
    
