@@ -403,7 +403,7 @@ class AttendanceApp:
         #"出勤ボタンが押されたときの処理
         #データベースにその名前を登録する
         if self.name_text == "Unknown":
-            messagebox.showinfo("エラー","認証できませんでした")
+            messagebox.showerror("エラー","認証できませんでした")
         else:
             self.database.insert_record(self.name_text, "attendance")
 
@@ -411,7 +411,7 @@ class AttendanceApp:
         #"退勤ボタンが押されたときの処理
         #データベースにその名前を登録する
         if self.name_text == "Unknown":
-            messagebox.showinfo("エラー","認証できませんでした")
+            messagebox.showerror("エラー","認証できませんでした")
         else:    
             self.database.insert_record(self.name_text, "leaving")
 
