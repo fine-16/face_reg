@@ -348,7 +348,7 @@ class AttendanceApp:
         self.name_text = best_person_name
 
         # disp_image()を500msec後に実行する
-        self.after(500, self.disp_best_person_name)
+        self.window.after(500, self.disp_best_person_name)
 
 
     def disp_image(self):
