@@ -344,6 +344,7 @@ class AttendanceApp:
 
         #face_recognizerでカメラ画像が登録されている人のうちの誰に一番近いか推測して表示する
         best_person_name = self.face_recognizer.recognize_face(pil_image)
+        self.name_text = best_person_name
         self.name_title_label["text"] = best_person_name
 
         # disp_image()を500msec後に実行する
@@ -395,15 +396,13 @@ class AttendanceApp:
     #on_attendance()とon_leaving()はデータベースを作ってからプログラムを修正する
     def on_attendance(self):
         #"出勤ボタンが押されたときの処理
-        name = self.database.get_and_validate_name()
         #データベースにその名前を登録する
-        self.database.insert_record(name, "attendance")
+        self.database.insert_record(self.name_text, "attendance")
 
     def on_leaving(self):
         #"退勤ボタンが押されたときの処理
-        name = self.database.get_and_validate_name()
         #データベースにその名前を登録する
-        self.database.insert_record(name, "leaving")
+        self.database.insert_record(self.name_text, "leaving")
 
 
     def on_closing(self):
