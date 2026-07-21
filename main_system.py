@@ -466,11 +466,14 @@ class AttendanceApp:
 
 
     def on_closing(self):
-        self.sync.sync()
+        
         #アプリ終了時にメモリを解放する処理
         self.camera_unit.close()
         self.database.close()
         self.window.destroy()
+
+        #データベースの同期　時間がかかるけど触らない
+        self.sync.sync()
 
 
 
