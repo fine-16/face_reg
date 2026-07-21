@@ -291,7 +291,7 @@ class AttendanceApp:
         # 右フレーム：名前「入力欄」への変更
         self.name_text = "適切な位置に顔を合わせてください"
         self.name_label = tk.Label(
-            self.right_frame, text= self.name_text
+            self.right_frame, text= "認識した人の名前："+self.name_text
         )
         self.name_label.pack(pady=(20, 5))
 
@@ -323,7 +323,7 @@ class AttendanceApp:
         self.last_record_title = tk.Label(
             self.right_frame, text= "最後にされた操作"
         )
-        self.name_title_label.pack(pady=(20, 5))
+        self.last_record_title.pack(pady=(20, 5))
 
         # 最後に入力された勤怠を表示
         self.last_record = "ここに最終操作が表示されます"
