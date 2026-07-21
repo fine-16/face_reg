@@ -347,7 +347,7 @@ class AttendanceApp:
         #face_recognizerでカメラ画像が登録されている人のうちの誰に一番近いか推測して表示する
         best_person_name = self.face_recognizer.recognize_face(pil_image)
         self.name_text = best_person_name
-        self.name_label["text"] = "認識した人" + best_person_name
+        self.name_label["text"] = "認識した人 : " + best_person_name
 
         # disp_image()を500msec後に実行する
         self.window.after(500, self.disp_best_person_name)
