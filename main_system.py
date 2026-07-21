@@ -402,12 +402,18 @@ class AttendanceApp:
     def on_attendance(self):
         #"出勤ボタンが押されたときの処理
         #データベースにその名前を登録する
-        self.database.insert_record(self.name_text, "attendance")
+        if self.name_text == "Unknown":
+            messagebox.showinfo("認証できませんでした")
+        else:
+            self.database.insert_record(self.name_text, "attendance")
 
     def on_leaving(self):
         #"退勤ボタンが押されたときの処理
         #データベースにその名前を登録する
-        self.database.insert_record(self.name_text, "leaving")
+        if self.name_text == "Unknown":
+            messagebox.showinfo("認証できませんでした")
+        else:    
+            self.database.insert_record(self.name_text, "leaving")
 
 
     def on_closing(self):
