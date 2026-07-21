@@ -344,7 +344,7 @@ class AttendanceApp:
 
         #face_recognizerでカメラ画像が登録されている人のうちの誰に一番近いか推測して表示する
         best_person_name = self.face_recognizer.recognize_face(pil_image)
-        self.name_text = best_person_name
+        self.name_title_label["text"] = best_person_name
 
         # disp_image()を500msec後に実行する
         self.window.after(500, self.disp_best_person_name)
@@ -353,14 +353,6 @@ class AttendanceApp:
     def disp_image(self):
         #画像をCanvasに表示する
 
-        
-        # フレーム画像の取得
-        #frame = self.capture
-
-        # BGR→RGB変換
-        #cv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        # NumPyのndarrayからPillowのImageへ変換
-        #pil_image = Image.fromarray(cv_image)
         
 
         # キャンバスのサイズを取得
