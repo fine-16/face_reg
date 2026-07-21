@@ -64,5 +64,6 @@ class Database:
 
 if __name__ == "__main__":
     db = Database()
-    
+    db.insert_record("takasu","attendance")
+    db.insert_record("iwasaki", "leaving")
     db.close()
