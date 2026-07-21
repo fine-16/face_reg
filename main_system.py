@@ -211,7 +211,7 @@ class FaceRecognizer:
         # ============================
         feature_dir = "saved_feature"
 
-        best_person = ""
+        best_person = "Unknown"
         best_similarity = -1
 
         for file in os.listdir(feature_dir):
@@ -228,8 +228,11 @@ class FaceRecognizer:
             print(f"{os.path.splitext(file)[0]:15s} : {self.percentage(sim)}%")
 
             if sim > best_similarity:
-                best_similarity = sim
-                best_person = os.path.splitext(file)[0]
+                if sim > 80:
+                    best_similarity = sim
+                    best_person = os.path.splitext(file)[0]
+                else:
+                    best_person = "Unknown"
 
         print(best_person)
 
