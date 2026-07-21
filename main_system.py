@@ -349,8 +349,8 @@ class AttendanceApp:
         self.name_text = best_person_name
         self.name_label["text"] = "認識した人 : " + best_person_name
 
-        # disp_image()を500msec後に実行する
-        self.window.after(500, self.disp_best_person_name)
+        # disp_image()を1000msec後に実行する
+        self.window.after(1000, self.disp_best_person_name)
 
 
     def disp_image(self):
@@ -382,16 +382,16 @@ class AttendanceApp:
                 image=self.photo_image  # 表示画像データ
                 )
 
-        # disp_image()を10msec後に実行する
-        self.window.after(10, self.disp_image)
+        # disp_image()を5msec後に実行する
+        self.window.after(5, self.disp_image)
 
     def disp_last_record(self):
         self.last_record = self.database.get_last_record()
         # self.last_record="".join([str(item) for item in db_last_record])
         self.last_record_label["text"] = self.last_record
 
-        # disp_image()を510msec後に実行する
-        self.window.after(510, self.disp_last_record)
+        # disp_image()を1000msec後に実行する
+        self.window.after(1000, self.disp_last_record)
 
 
 
