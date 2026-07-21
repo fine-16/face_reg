@@ -53,9 +53,9 @@ class CameraUnit:
         self.capture=self.picam2.capture_array()
         frame = self.capture
         # BGR→RGB変換
-        #cv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        cv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         # NumPyのndarrayからPillowのImageへ変換
-        self.pil_image = Image.fromarray(frame)
+        self.pil_image = Image.fromarray(cv_image)
 
         return self.pil_image
 
