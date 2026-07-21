@@ -386,14 +386,14 @@ class AttendanceApp:
                 )
 
         # disp_image()を10msec後に実行する
-        self.after(10, self.disp_image)
+        self.window.after(10, self.disp_image)
 
     def disp_last_record(self):
         db_last_record = self.database.get_last_record()
         self.last_record="".join([str(item) for item in db_last_record])
 
         # disp_image()を510msec後に実行する
-        self.after(510, self.disp_last_record)
+        self.window.after(510, self.disp_last_record)
 
 
 
