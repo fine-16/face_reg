@@ -5,7 +5,7 @@ import datetime
 conn = sqlite3.connect('attendance.db')
 cursor = conn.cursor()
 
-filename = 'attendance_log/' + str(datetime.datetime.now())+'.csv'
+filename = 'attendance_log/' + datetime.datetime.now().isoformat()+'.csv'
 
 def export_csv(filename):
         # CSVファイルにエクスポート
