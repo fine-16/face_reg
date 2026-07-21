@@ -395,13 +395,13 @@ class AttendanceApp:
     #on_attendance()とon_leaving()はデータベースを作ってからプログラムを修正する
     def on_attendance(self):
         #"出勤ボタンが押されたときの処理
-        name = self.get_and_validate_name()
+        name = self.database.get_and_validate_name()
         #データベースにその名前を登録する
         self.database.insert_record(name, "attendance")
 
     def on_leaving(self):
         #"退勤ボタンが押されたときの処理
-        name = self.get_and_validate_name()
+        name = self.database.get_and_validate_name()
         #データベースにその名前を登録する
         self.database.insert_record(name, "leaving")
 
