@@ -16,7 +16,7 @@ from PIL import Image
 # モデル読込
 # ----------------------------
 
-model_name = "JAPANESE_FACE_V2.onnx"
+model_name = "JAPANESE_FACE_v1.onnx"
 onnx_model = onnx.load(model_name)
 ort_session = ort.InferenceSession(model_name)
 
