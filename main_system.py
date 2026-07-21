@@ -369,6 +369,7 @@ class AttendanceApp:
 
         #pilimageをframeに渡す
         pil_image = self.camera_unit.get_frame() 
+        pil_image = cv2.cvtColor(pil_image, cv2.COLOR_BGR2RGB)
 
         # 画像のアスペクト比（縦横比）を崩さずに指定したサイズ（キャンバスのサイズ）全体に画像をリサイズする
         pil_image = ImageOps.pad(pil_image, (canvas_width, canvas_height))
