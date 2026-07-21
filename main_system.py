@@ -128,7 +128,7 @@ class Database:
 class FaceRecognizer:
     #使う写真はPNGで224px×224pxにリサイズしておくこと
     
-    def __init__(self, model_name="JAPANESE_FACE_v1.onnx"):
+    def __init__(self, model_name="JAPANESE_FACE_V2.onnx"):
         #----------------------------
         # モデル読込
         # ----------------------------
