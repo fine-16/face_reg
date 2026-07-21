@@ -21,7 +21,15 @@ def export_csv(filename):
 
 export_csv(filename)
 
-subprocess.call("rclone copy " + filename + " MyGoogleDrive:rpi_backup")
+cmd = ["rclone", "copy", filename," MyGoogleDrive:rpi_backup"]
+#subprocess.call("rclone copy " + filename + " MyGoogleDrive:rpi_backup")
+
+try:
+    # コマンドを実行し、完了するまで待機（エラー時は例外を発生）
+    result = subprocess.run(cmd, check=True, capture_output=True, text=True)
+    print("成功:", result.stdout)
+except subprocess.CalledProcessError as e:
+    print("エラーが発生しました:", e.stderr)
 
 cursor.close()
 conn.close()
