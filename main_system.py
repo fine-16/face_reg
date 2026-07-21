@@ -21,6 +21,12 @@ from tkinter import messagebox
 import cv2
 from PIL import Image, ImageTk, ImageOps  # 画像データ用
 from picamera2.picamera2 import Picamera2
+
+#sync unit のためのライブラリ
+import subprocess
+import sqlite3
+import datetime
+
 '''
 
 #整理したライブラリ
@@ -37,6 +43,9 @@ import onnxruntime as ort
 import tkinter as tk
 from tkinter import messagebox
 from PIL import Image, ImageTk, ImageOps  # 画像データ用
+
+import subprocess
+import datetime
 
 
 #最後にclose忘れない<-AttendanceAPPで実装済み
@@ -238,10 +247,49 @@ class FaceRecognizer:
 
         return best_person
 
+class sync_unit:
+    def __init__(self):
+        self.conn = sqlite3.connect('attendance.db')
+        self.cursor = self.conn.cursor()
+        self.backup_filename = 'attendance_log/' + datetime.datetime.now().isoformat()+'.csv'
+        self.prod_filename = "attendance_prod.csv"
+
+        
+
+
+    def export_csv(self,filename):
+        # CSVファイルにエクスポート
+        self.cursor.execute('''
+            SELECT * FROM attendance
+        ''')
+        records = self.cursor.fetchall()
+
+        with open(filename, 'w', encoding='utf-8') as f:
+            f.write("id,timestamp,name,status\n")
+            for record in records:
+                f.write(','.join(map(str, record)) + '\n')
+
+
+    def rclone(self,from_filename,to_filename):
+        self.export_csv(from_filename)
+        cmd = "rclone " + "copy " + from_filename + " MyGoogleDrive:" + to_filename
+
+        try:
+        # コマンドを実行し、完了するまで待機（エラー時は例外を発生）
+            result = subprocess.run(cmd, check=True, capture_output=True, text=True,shell=True)
+            print("成功:", result.stdout)
+        except subprocess.CalledProcessError as e:
+            print("エラーが発生しました:", e.stderr)
+    
+    def sync(self):
+        self.rclone(self.backup_filename,"rpi_backup")
+        self.rclone(self.prod_filename,"rpi_prod")
+
+
 
 class AttendanceApp:
 
-    def __init__(self, window, camera_unit, face_recognizer, database):
+    def __init__(self, window, camera_unit, face_recognizer, database,sync):
         self.window = window
         self.window.title("勤怠管理システム")
 
@@ -258,7 +306,8 @@ class AttendanceApp:
         #insert_record(name, status)でDBにレコードを挿入する
         #get_last_record()で最後のレコードを取得する
         self.database = database
-
+        
+        self.sync = sync
 
 
         #cameraはCameraUnitのクラスを使う
@@ -417,6 +466,7 @@ class AttendanceApp:
 
 
     def on_closing(self):
+        self.sync.sync()
         #アプリ終了時にメモリを解放する処理
         self.camera_unit.close()
         self.database.close()
@@ -429,6 +479,7 @@ if __name__ == "__main__":
     camera_unit = CameraUnit()
     face_recognizer = FaceRecognizer()
     database = Database() 
-    app = AttendanceApp(root,camera_unit,face_recognizer,database)
+    sync=sync_unit()
+    app = AttendanceApp(root,camera_unit,face_recognizer,database,sync)
     root.mainloop()
    
