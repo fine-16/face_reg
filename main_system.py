@@ -232,6 +232,7 @@ class FaceRecognizer:
                     best_similarity = sim
                     best_person = os.path.splitext(file)[0]
                 else:
+                    best_similarity = sim
                     best_person = "Unknown"
 
         print(best_person)
