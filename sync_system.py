@@ -21,7 +21,7 @@ def export_csv(filename):
 
 export_csv(filename)
 
-subprocess.call("rclone copy " + filename + "MyGoogleDrive:rpi_backup")
+subprocess.call("rclone copy " + filename + " MyGoogleDrive:rpi_backup")
 
 cursor.close()
 conn.close()
