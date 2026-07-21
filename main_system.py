@@ -231,7 +231,7 @@ class FaceRecognizer:
                 best_similarity = sim
                 best_person = os.path.splitext(file)[0]
             
-        if self.percentage(best_similarity) < 82: #個々の値は何％だったらその人とするかの値　これがないとヒトじゃなくても反応する
+        if self.percentage(best_similarity) < 81: #個々の値は何％だったらその人とするかの値　これがないとヒトじゃなくても反応する
             best_person = "Unknown"
 
         print(best_person)
