@@ -41,5 +41,13 @@ class sync_unit:
         self.rclone(self.backup_filename,"rpi_backup")
         self.rclone(self.prod_filename,"rpi_prod")
 
+    def close(self):
+        self.cursor.close()
+        self.conn.close()
 
 
+
+if __name__ == "__main__":
+    sync =sync_unit()
+    sync.sync()
+    sync.close()
