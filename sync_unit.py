@@ -55,5 +55,5 @@ def job():
 schedule.every(1).minutes.do(job)
 
 while True:
-    schedule.run_peding()
+    schedule.run_pending()
     time.sleep(1)

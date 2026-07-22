@@ -28,6 +28,7 @@ pillow == 11.1.0
 picamera2 == 0.3.36
 pip == 25.1.1
 sqlite3 == 3.46.1
+schedule == 1.2.2
 
 
 ## 使用方法
