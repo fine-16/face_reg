@@ -52,8 +52,16 @@ def job():
     sync.sync()
     sync.close()
 
+start_time=time.time()
+limit_seconds = 36
+
 schedule.every(1).minutes.do(job)
 
 while True:
     schedule.run_pending()
     time.sleep(1)
+
+    elapsed_time =time.time() - start_time
+    if elapsed_time > limit_seconds:
+        print("Finish!!")
+        break
