@@ -1,6 +1,8 @@
 import subprocess
 import sqlite3
 import datetime
+import schedule
+import time
 
 
 class sync_unit:
@@ -45,9 +47,13 @@ class sync_unit:
         self.cursor.close()
         self.conn.close()
 
-
-
-if __name__ == "__main__":
-    sync =sync_unit()
+def job():
+    sync = sync_unit()
     sync.sync()
     sync.close()
+
+schedule.every(1).minutes.do(job)
+
+while True:
+    schedule.run_peding()
+    time.sleep(1)
