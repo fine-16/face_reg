@@ -53,7 +53,7 @@ def job():
     sync.close()
 
 start_time=time.time()
-limit_seconds = 36
+limit_seconds = 36000
 
 schedule.every(1).minutes.do(job)
 
