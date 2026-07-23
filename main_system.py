@@ -275,7 +275,6 @@ class sync_unit:
         cmd = "rclone " + "copy " + from_filename + " MyGoogleDrive:" + to_filename
 
         try:
-        # コマンドを実行し、完了するまで待機（エラー時は例外を発生）
             result = subprocess.run(cmd, check=True, capture_output=True, text=True,shell=True)
             print("成功:", result.stdout)
         except subprocess.CalledProcessError as e:
@@ -309,15 +308,6 @@ class AttendanceApp:
         
         self.sync = sync
 
-
-        #cameraはCameraUnitのクラスを使う
-        '''
-        # 1. カメラの初期化
-        self.picam2 = Picamera2()
-        self.picam2.start()
-        #カメラの映像を取得するための変数を設定
-        self.capture=self.picam2.capture_array()
-        '''
 
         # 全体のレイアウト設定（左右のフレームを作成）
         self.left_frame = tk.Frame(window)
@@ -447,7 +437,6 @@ class AttendanceApp:
 
 
 
-    #on_attendance()とon_leaving()はデータベースを作ってからプログラムを修正する
     def on_attendance(self):
         #"出勤ボタンが押されたときの処理
         #データベースにその名前を登録する
@@ -473,7 +462,7 @@ class AttendanceApp:
         self.window.destroy()
 
         #データベースの同期　時間がかかるけど触らない
-        #定期的な動機はシェルスクリプトで行う
+        #定期的な動機は別で行う
         self.sync.sync()
 
 
