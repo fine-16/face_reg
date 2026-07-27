@@ -49,7 +49,7 @@ schedule == 1.2.2
 - Dockerはカメラをうまく認識させられませんでした
 - uvで環境構築をしようとしたためtomlとかがくっついていますが、カメラの問題で途中から使ってないので気にしないでください
   
-##　謝辞
+## 謝辞
 This project contains code from yKesamaru/FACE01_DEV which is licensed under the Apache License, Version 2.0.
   
 # メモ
