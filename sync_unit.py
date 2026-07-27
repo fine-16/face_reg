@@ -30,7 +30,7 @@ class sync_unit:
 
     def rclone(self,from_filename,to_filename):
         self.export_csv(from_filename)
-        cmd = "rclone " + "copy " + from_filename + " MyGoogleDrive:" + to_filename
+        cmd = "rclone " + "copy " + from_filename + " AIMSLab_Students:" + to_filename
 
         try:
         # コマンドを実行し、完了するまで待機（エラー時は例外を発生）
